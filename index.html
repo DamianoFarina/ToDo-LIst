@@ -1,0 +1,101 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+    <body>
+        <h1>ToDOList</h1>
+        <input type="text" id="new-task">
+        <button id="new-task-btn">Aggiungi Task</button>
+        <button id="clear-btn">Clear</button>
+        <div id="toDo"></div>
+    </body>
+    <script>
+
+        class ToDoList{
+            constructor(){
+                this.tasks = this.loadTask()
+                this.generaTask()
+            }
+
+            addTask(task){
+                this.tasks.push(task)
+                console.log(this.tasks)
+                this.newTask(task)
+                localStorage.setItem("task",JSON.stringify(this.tasks))
+            }
+
+            newTask(task){
+                const toDo = document.getElementById("toDo")
+                const p = document.createElement("p")
+                p.appendChild(document.createTextNode(task))
+                toDo.appendChild(p)
+                p.addEventListener("click",(e)=>{
+                    this.closeTask(task)
+                    e.srcElement.remove()
+                })
+            }
+
+            generaTask(){
+                this.tasks.forEach(task => {
+                    const toDo = document.getElementById("toDo")
+                     const p = document.createElement("p")
+                     p.appendChild(document.createTextNode(task))
+                    toDo.appendChild(p)
+                    p.addEventListener("click",(e)=>{
+                    this.closeTask(task)
+                    e.srcElement.remove()
+                  })
+                })
+            }
+
+            loadTask(){
+                return JSON.parse(localStorage.getItem("task"))??[]
+            }
+
+            closeTask(task){
+                const index = this.tasks.indexOf(task);
+              this.tasks.splice(index, 1);
+              localStorage.setItem("task",JSON.stringify(this.tasks))
+            }
+
+            wipe(){
+                const empty = document.getElementById("toDo")
+                while(empty.firstChild){
+                    empty.removeChild(empty.firstChild)
+                    localStorage.clear() // pulisce la memoria dalle chiavi, elementi, array se ci sono 
+                }
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded",()=>{  //viene eseguito prima del caricamento di immagini , css viedo ecc... per non rallentare la pagina
+            const newTask = document.getElementById("new-task-btn")
+            const clear = document.getElementById("clear-btn")
+            const input = document.getElementById("new-task")
+            
+            const tod = new ToDoList()
+
+            newTask.addEventListener("click",()=>{
+                    tod.addTask(input.value)
+                    input.value=""
+            })
+
+            clear.addEventListener("click",()=>{
+                    tod.wipe()
+            })
+
+            input.addEventListener("keypress",(e)=>{
+                if(e.key === "Enter"){
+                    tod.addTask(input.value)
+                    input.value=""
+                }
+            })
+            
+        })
+
+         //serve per far caricare tutta la pagina prima dello script
+
+    </script>
+</html>
